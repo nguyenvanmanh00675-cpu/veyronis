@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dịch Vụ Windows & PC</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #050b08;
+      font-family: "Courier New", monospace;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #00ff77;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 119, 0.5);
+      animation: fadeInDown 0.8s ease-out;
+      text-align: center;
+    }
+
+    /* Khung chứa 2 ô bự */
+    .container {
+      display: flex;
+      gap: 30px;
+      max-width: 900px;
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    /* Ô bự Viền Xanh - Bên trong Màu Đen */
+    .os-box {
+      flex: 1;
+      height: 200px;
+      background-color: #000000;
+      border: 3px solid #00ff77;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #00ff77;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 255, 119, 0.1);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      animation: fadeInUp 1s ease-out both;
+    }
+
+    .os-box:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .os-box:hover, .os-box.active {
+      background-color: #00ff77;
+      color: #000;
+      box-shadow: 0 0 30px rgba(0, 255, 119, 0.6);
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    /* Khu vực danh sách dịch vụ (Ẩn mặc định) */
+    .services-section {
+      max-width: 800px;
+      width: 100%;
+      background-color: #000;
+      border: 1px solid #17352a;
+      border-radius: 12px;
+      padding: 30px;
+      display: none; 
+      animation: slideDown 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      margin-bottom: 30px;
+    }
+
+    .services-section h2 {
+      color: #00ff77;
+      margin-top: 0;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      font-size: 20px;
+      border-bottom: 1px solid #17352a;
+      padding-bottom: 10px;
+    }
+
+    /* Từng ô dịch vụ */
+    .service-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background-color: #050b08;
+      border: 1px solid #17352a;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .service-card:hover {
+      border-color: #00ff77;
+      box-shadow: 0 0 10px rgba(0, 255, 119, 0.2);
+    }
+
+    .service-card.selected {
+      border-color: #00ff77;
+      background-color: rgba(0, 255, 119, 0.05);
+    }
+
+    .service-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* Checkbox custom */
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #17352a;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .service-card.selected .custom-checkbox {
+      background-color: #00ff77;
+      border-color: #00ff77;
+    }
+
+    .custom-checkbox::after {
+      content: "✓";
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      display: none;
+    }
+
+    .service-card.selected .custom-checkbox::after {
+      display: block;
+    }
+
+    .service-name {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .service-price {
+      color: #00ff77;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* Bảng Tổng Tiền */
+    .total-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 2px dashed #17352a;
+    }
+
+    .total-title {
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .total-amount {
+      color: #00ff77;
+      font-size: 26px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 119, 0.4);
+    }
+
+    /* Nút quay lại */
+    .back-btn {
+      color: #6d887d;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+      margin-top: 20px;
+    }
+    .back-btn:hover {
+      color: #00ff77;
+    }
+
+    /* Hiệu ứng Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>DỊCH VỤ WINDOWS & PC</h1>
+
+  <div class="container">
+    <!-- Nút bấm Windows 10 -->
+    <div class="os-box" id="win10-btn">Windows 10</div>
+    <!-- Nút bấm Windows 11 -->
+    <div class="os-box" id="win11-btn">Windows 11</div>
+  </div>
+
+  <!-- BẢNG DỊCH VỤ WINDOWS 10 -->
+  <div class="services-section" id="win10-services">
+    <h2>Danh sách dịch vụ Windows 10</h2>
+    <div class="service-card" onclick="toggleService('win10', this, 120000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Cài Window + Driver</div></div>
+      <div class="service-price">120.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win10', this, 170000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Cài Win + tối ưu máy</div></div>
+      <div class="service-price">170.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win10', this, 35000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Cài Driver</div></div>
+      <div class="service-price">35.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win10', this, 70000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Fix lỗi máy</div></div>
+      <div class="service-price">70.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win10', this, 70000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Tối Ưu Fps Game</div></div>
+      <div class="service-price">70.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win10', this, 40000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Tư Vấn Nâng Cấp, Kiểm Tra Lỗi PC</div></div>
+      <div class="service-price">40.000đ</div>
+    </div>
+    <div class="total-box">
+      <div class="total-title">Tổng tiền Windows 10:</div>
+      <div class="total-amount" id="win10-total">0đ</div>
+    </div>
+  </div>
+
+  <!-- BẢNG DỊCH VỤ WINDOWS 11 -->
+  <div class="services-section" id="win11-services">
+    <h2>Danh sách dịch vụ Windows 11</h2>
+    <div class="service-card" onclick="toggleService('win11', this, 130000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Cài Window + Driver</div></div>
+      <div class="service-price">130.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win11', this, 180000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Cài Win + tối ưu máy</div></div>
+      <div class="service-price">180.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win11', this, 40000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Cài Driver</div></div>
+      <div class="service-price">40.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win11', this, 80000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Fix lỗi máy</div></div>
+      <div class="service-price">80.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win11', this, 75000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Tối Ưu Fps Game</div></div>
+      <div class="service-price">75.000đ</div>
+    </div>
+    <div class="service-card" onclick="toggleService('win11', this, 40000)">
+      <div class="service-info"><div class="custom-checkbox"></div><div class="service-name">Tư Vấn Nâng Cấp, Kiểm Tra Lỗi PC</div></div>
+      <div class="service-price">40.000đ</div>
+    </div>
+    <div class="total-box">
+      <div class="total-title">Tổng tiền Windows 11:</div>
+      <div class="total-amount" id="win11-total">0đ</div>
+    </div>
+  </div>
+
+  <a href="index.html" class="back-btn">← Quay lại trang chính</a>
+
+  <!-- ĐOẠN XỬ LÝ LOGIC TÍNH TOÁN -->
+  <script>
+    let win10Total = 0;
+    let win11Total = 0;
+
+    const win10Btn = document.getElementById('win10-btn');
+    const win11Btn = document.getElementById('win11-btn');
+    const win10Area = document.getElementById('win10-services');
+    const win11Area = document.getElementById('win11-services');
+
+    // Sự kiện mở bảng Windows 10
+    win10Btn.addEventListener('click', function() {
+      this.classList.toggle('active');
+      win11Btn.classList.remove('active');
+      win11Area.style.display = 'none'; // Ẩn bảng kia đi
+
+      if (win10Area.style.display === 'block') {
+        win10Area.style.display = 'none';
+      } else {
+        win10Area.style.display = 'block';
+      }
+    });
+
+    // Sự kiện mở bảng Windows 11
+    win11Btn.addEventListener('click', function() {
+      this.classList.toggle('active');
+      win10Btn.classList.remove('active');
+      win10Area.style.display = 'none'; // Ẩn bảng kia đi
+
+      if (win11Area.style.display === 'block') {
+        win11Area.style.display = 'none';
+      } else {
+        win11Area.style.display = 'block';
+      }
+    });
+
+    // Hàm tính tiền tự động cho cả 2 bên
+    function toggleService(type, element, price) {
+      element.classList.toggle('selected');
+      
+      if (type === 'win10') {
+        if (element.classList.contains('selected')) {
+          win10Total += price;
+        } else {
+          win10Total -= price;
+        }
+        document.getElementById('win10-total').innerText = win10Total.toLocaleString('vi-VN') + 'đ';
+      } else {
+        if (element.classList.contains('selected')) {
+          win11Total += price;
+        } else {
+          win11Total -= price;
+        }
+        document.getElementById('win11-total').innerText = win11Total.toLocaleString('vi-VN') + 'đ';
+      }
+    }
+  </script>
+
+</body>
+</html>
