@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bảng Điều Khiển Admin - Veyronis</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background-color: #050b08;
+    color: #c8d8d0;
+    font-family: "Courier New", monospace;
+    padding: 30px 15px 80px;
+}
+.wrap { max-width: 800px; margin: auto; }
+
+h1 {
+    color: #00ff77;
+    text-align: center;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0,255,119,.5);
+    margin-bottom: 5px;
+}
+.sub-title {
+    text-align: center;
+    color: #6d887d;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.lock-screen {
+    max-width: 380px;
+    margin: 80px auto;
+    text-align: center;
+    border: 2px solid #ff3333;
+    border-radius: 14px;
+    padding: 35px 25px;
+    background: #0a0505;
+}
+.lock-screen i { font-size: 40px; color: #ff3333; margin-bottom: 15px; }
+.lock-screen h2 { color: #ff3333; margin: 0 0 10px; }
+.lock-screen p { color: #aaa; font-size: 14px; line-height: 1.6; }
+.lock-screen a { color: #00ff77; font-weight: bold; text-decoration: none; }
+
+.category {
+    border: 1px solid #17352a;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+.category-head {
+    background: #0c1511;
+    color: #5bff99;
+    padding: 14px 18px;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+.service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-top: 1px solid #10231b;
+    gap: 12px;
+}
+.service-row .name {
+    font-size: 14px;
+    color: #e7f5ee;
+}
+.service-row .status-text {
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 78px;
+    text-align: right;
+}
+.status-text.active { color: #00ff77; }
+.status-text.maintenance { color: #ff4d4d; }
+
+/* Toggle switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ff3333;
+    transition: .3s;
+    border-radius: 26px;
+}
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    transition: .3s;
+    border-radius: 50%;
+}
+input:checked + .slider { background-color: #00ff77; }
+input:checked + .slider::before { transform: translateX(22px); }
+
+.row-right { display: flex; align-items: center; }
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.admin-tag {
+    font-size: 12px;
+    color: #00ff77;
+    background: #0a0f0c;
+    border: 1px solid #17352a;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+.back-link {
+    color: #6d887d;
+    text-decoration: none;
+    font-size: 13px;
+}
+.back-link:hover { color: #00ff77; }
+
+#toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #050505;
+    color: #fff;
+    border: 2px solid #00ff7f;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 255, 127, 0.4);
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    z-index: 9999;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    max-width: 320px;
+}
+.toast-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+.toast-show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="toast-notification" class="toast-hidden">
+    <span id="toast-message">Thông báo</span>
+</div>
+
+<div class="wrap">
+
+    <!-- Màn hình khóa nếu không phải admin -->
+    <div id="lock-screen" class="lock-screen" style="display:none;">
+        <i class="fa-solid fa-lock"></i>
+        <h2>KHÔNG CÓ QUYỀN TRUY CẬP</h2>
+        <p>Trang này chỉ dành cho quản trị viên (Admin).<br>Vui lòng <a href="taikhoan.html">đăng nhập</a> bằng tài khoản Admin.</p>
+    </div>
+
+    <!-- Nội dung bảng điều khiển -->
+    <div id="admin-panel" style="display:none;">
+        <div class="top-bar">
+            <a href="index.html" class="back-link">← Quay lại trang chủ</a>
+            <span class="admin-tag"><i class="fa-solid fa-user-shield"></i> Đang đăng nhập: <span id="admin-email"></span></span>
+        </div>
+
+        <h1>BẢNG ĐIỀU KHIỂN ADMIN</h1>
+        <div class="sub-title">Bật / tắt bảo trì cho từng dịch vụ. Khi bảo trì, dịch vụ sẽ KHÔNG mua được ở trang dịch vụ và hiện "Bảo Trì" ở trang chủ.</div>
+
+        <!-- WINDOWS & PC -->
+        <div class="category">
+            <div class="category-head">🪟 WINDOWS & PC</div>
+            <div id="group-pc"></div>
+        </div>
+
+        <!-- MINECRAFT -->
+        <div class="category">
+            <div class="category-head">🟩 MINECRAFT</div>
+            <div id="group-mc"></div>
+        </div>
+
+        <!-- DISCORD -->
+        <div class="category">
+            <div class="category-head">💬 DISCORD</div>
+            <div id="group-dc"></div>
+        </div>
+    </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+/* ================= DANH SÁCH ID ADMIN ĐƯỢC PHÉP TRUY CẬP =================
+   Sửa lại đúng Gmail/SĐT admin của bạn vào đây (có thể thêm nhiều admin).
+*/
+const ADMIN_ACCOUNTS = [
+    "admin@gmail.com" // <-- ĐỔI THÀNH GMAIL ADMIN THẬT CỦA BẠN
+];
+
+/* ================= DANH SÁCH DỊCH VỤ THEO TỪNG NHÓM ================= */
+const SERVICE_GROUPS = {
+    "group-pc": [
+        { id: "svc_install_driver", name: "Cài Windows + Driver" },
+        { id: "svc_install_optimize", name: "Cài Win + tối ưu máy" },
+        { id: "svc_driver_only", name: "Cài Driver" },
+        { id: "svc_fix_error", name: "Fix lỗi máy" },
+        { id: "svc_fps", name: "Tối ưu FPS game" },
+        { id: "svc_advice", name: "Tư Vấn Nâng Cấp, Kiểm Tra Lỗi PC" }
+    ],
+    "group-mc": [
+        { id: "mc_mod_shader", name: "Cài Mod / Shader" },
+        { id: "mc_fix_crash", name: "Fix lỗi crash" },
+        { id: "mc_fix_mod", name: "Fix Lỗi Mod" },
+        { id: "mc_setup_server", name: "Setup server Minecraft" },
+        { id: "mc_plugin", name: "Cài Plugin" },
+        { id: "mc_modpack", name: "Cài Mod pack nặng / chuyên sâu" }
+    ],
+    "group-dc": [
+        { id: "dc_setup_server", name: "Set up Discord server" },
+        { id: "dc_setup_bot", name: "Set Up bot cơ bản" }
+    ]
+};
+
+function renderServiceGroups() {
+    Object.keys(SERVICE_GROUPS).forEach(groupId => {
+        const container = document.getElementById(groupId);
+        container.innerHTML = SERVICE_GROUPS[groupId].map(svc => {
+            const active = isServiceActive(svc.id);
+            return `
+                <div class="service-row">
+                    <div class="name">${svc.name}</div>
+                    <div class="row-right">
+                        <span class="status-text ${active ? 'active' : 'maintenance'}" id="status-${svc.id}">
+                            ${active ? 'Hoạt Động' : 'Bảo Trì'}
+                        </span>
+                        <label class="switch">
+                            <input type="checkbox" ${active ? 'checked' : ''} onchange="handleToggle('${svc.id}', '${svc.name.replace(/'/g, "\\'")}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    });
+}
+
+function handleToggle(serviceId, serviceName, isActive) {
+    setServiceStatus(serviceId, isActive);
+    const statusEl = document.getElementById(`status-${serviceId}`);
+    if (statusEl) {
+        statusEl.innerText = isActive ? 'Hoạt Động' : 'Bảo Trì';
+        statusEl.className = `status-text ${isActive ? 'active' : 'maintenance'}`;
+    }
+    showToast(
+        isActive ? `Đã BẬT hoạt động: ${serviceName}` : `Đã chuyển sang BẢO TRÌ: ${serviceName}`,
+        isActive ? "#00ff7f" : "#ff3333"
+    );
+}
+
+/* ================= KIỂM TRA QUYỀN ADMIN ================= */
+document.addEventListener("DOMContentLoaded", function () {
+    const currentUser = getCurrentUser();
+    const userEmail = currentUser ? (currentUser.email || currentUser.phone) : null;
+
+    if (userEmail && ADMIN_ACCOUNTS.includes(userEmail)) {
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('admin-email').innerText = userEmail;
+        renderServiceGroups();
+    } else {
+        document.getElementById('lock-screen').style.display = 'block';
+    }
+});
+</script>
+</body>
+</html>
