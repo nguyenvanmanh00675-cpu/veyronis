@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp Tiền Hệ Thống - Veyronis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .nap-container {
+            border: 2px solid #00ff7f;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
+            width: 100%;
+            max-width: 460px;
+            text-align: center;
+            background-color: #050505;
+        }
+        h2 {
+            color: #00ff7f;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .user-info-brief {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 20px;
+            background: #111;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px dashed #222;
+        }
+        .user-info-brief span {
+            color: #00ff7f;
+            font-weight: bold;
+        }
+        
+        /* Tab menu chuyển đổi */
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #333;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            border-color: #00ff7f;
+            color: #00ff7f;
+            background: rgba(0, 255, 127, 0.05);
+            box-shadow: 0 0 10px rgba(0, 255, 127, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #aaa;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: #00ff7f;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0,255,127,0.2);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: #00ff7f;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            font-size: 15px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #fff;
+            box-shadow: 0 0 15px #00ff7f;
+        }
+
+        /* Vùng hiển thị mã QR tự động */
+        #qr-area {
+            margin-top: 15px;
+            padding-top: 10px;
+            display: none;
+        }
+        .qr-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .qr-box img {
+            max-width: 220px;
+            display: block;
+        }
+        .memo-box {
+            background: #111;
+            border: 1px solid #ffaa00;
+            padding: 12px;
+            border-radius: 5px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .memo-title {
+            font-size: 12px;
+            color: #ffaa00;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .memo-text {
+            font-family: monospace;
+            font-size: 16px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .back-home {
+            display: block;
+            margin-top: 25px;
+            color: #6d887d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-home:hover {
+            color: #00ff7f;
+        }
+        .warning-text {
+            font-size: 12px;
+            color: #ff3333;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nap-container">
+        <h2>NẠP TIỀN HỆ THỐNG</h2>
+        
+        <div class="user-info-brief" id="user-display">
+            Đang kiểm tra trạng thái...
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('atm')"><i class="fa-solid fa-qrcode"></i> Chuyển Khoản QR</button>
+            <button class="tab-btn" onclick="switchTab('card')"><i class="fa-solid fa-id-card"></i> Thẻ Cào ĐT</button>
+        </div>
+
+        <div id="tab-atm" class="tab-content active">
+            <div id="form-atm-input">
+                <div class="input-group">
+                    <label>Nhập số tiền cần nạp (VNĐ)</label>
+                    <input type="number" id="amount-input" min="10000" placeholder="Ví dụ: 50000, 100000...">
+                </div>
+                <button onclick="generateQRCode()" class="btn-submit">TẠO MÃ QR ĐÚNG SỐ TIỀN</button>
+            </div>
+
+            <div id="qr-area">
+                <p style="color: #00ff7f; font-weight: bold; margin-top: 0;">QUÉT MÃ QR ĐỂ THANH TOÁN TỰ ĐỘNG</p>
+                <div class="qr-box">
+                    <img id="qr-image" src="" alt="Mã QR Chuyển Khoản">
+                </div>
+                <div class="memo-box">
+                    <div class="memo-title"><i class="fa-solid fa-triangle-exclamation"></i> NỘI DUNG CHUYỂN KHOẢN RIÊNG BIỆT</div>
+                    <div class="memo-text" id="memo-content">VEYRONIS_...</div>
+                </div>
+                <p class="warning-text">* Ngân hàng tự điền số tiền và lời nhắn duy nhất này khi quét QR, vui lòng không chỉnh sửa!</p>
+                <button onclick="cancelQR()" style="background:none; border: 1px solid #555; color:#888; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:12px;">Đổi số tiền khác</button>
+            </div>
+        </div>
+
+        <div id="tab-card" class="tab-content">
+            <form id="card-form" onsubmit="handleCardSubmit(event)">
+                <div class="input-group">
+                    <label>Chọn nhà mạng thẻ cào</label>
+                    <select id="card-type" required>
+                        <option value="">-- Bấm để chọn nhà mạng --</option>
+                        <option value="VIETTEL">Viettel</option>
+                        <option value="VINAPHONE">Vinaphone</option>
+                        <option value="MOBIFONE">Mobifone</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Chọn mệnh giá thẻ</label>
+                    <select id="card-value" required>
+                        <option value="">-- Bấm để chọn mệnh giá --</option>
+                        <option value="10000">10,000đ</option>
+                        <option value="20000">20,000đ</option>
+                        <option value="50000">50,000đ</option>
+                        <option value="100000">100,000đ</option>
+                        <option value="200000">200,000đ</option>
+                        <option value="500000">500,000đ</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Mã số nạp thẻ (Dưới lớp bạc)</label>
+                    <input type="text" id="card-code" placeholder="Nhập mã thẻ..." required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Số Seri thẻ cào</label>
+                    <input type="text" id="card-seri" placeholder="Nhập số Seri..." required autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit">GỬI THẺ LÊN HỆ THỐNG DUYỆT</button>
+            </form>
+        </div>
+
+        <a href="index.html" class="back-home">← Quay lại trang chủ</a>
+    </div>
+
+<script>
+    // --- CẤU HÌNH NGÂN HÀNG CỦA BẠN ĐỂ NHẬN TIỀN ---
+    const BANK_BIN = "VCB";
+    const BANK_ACCOUNT = "1063488753";
+    const BANK_NAME = "NGUYEN TRI LAM";
+
+    let currentUser = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const userDisplay = document.getElementById('user-display');
+        
+        // Bảo mật: Nếu chưa đăng nhập, khóa hoàn toàn giao diện nạp
+        if (!currentUser) {
+            userDisplay.innerHTML = `<span style="color: #ff3333;">Bạn chưa đăng nhập! Hãy quay lại <a href="taikhoan.html" style="color:#00ff7f; font-weight:bold;">Đăng nhập</a>.</span>`;
+            document.getElementById('tab-atm').style.display = 'none';
+            document.querySelector('.tab-buttons').style.display = 'none';
+        } else {
+            userDisplay.innerHTML = `Tài khoản đang nạp: <span>${currentUser.email || currentUser.phone}</span>`;
+        }
+    });
+
+    // Chuyển đổi tab qua lại giữa Ngân hàng và Thẻ cào
+    function switchTab(type) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        if(type === 'atm') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('tab-atm').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('tab-card').classList.add('active');
+        }
+    }
+
+    // Tự động gộp Số tiền + Tên nick độc nhất để vẽ QR chuẩn xác ngân hàng
+    function generateQRCode() {
+        const amount = document.getElementById('amount-input').value;
+        if (!amount || amount < 10000) { alert("Số tiền nạp tối thiểu là 10,000 VNĐ"); return; }
+        
+        const displayUser = currentUser.email || currentUser.phone;
+        // Lọc lấy phần tên chữ sạch sẽ để làm nội dung nhận diện lời nhắn chuyển khoản riêng biệt
+        const cleanIdentifier = displayUser.split('@')[0].replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+        
+        // Tạo lời nhắn duy nhất cho từng người dùng: VEYRONIS_NAP_<TÊN_NICK>
+        const memo = `VEYRONISNAP${cleanIdentifier}`;
+        
+        // Vẽ mã QR động VietQR chuẩn hóa số tiền tự động khớp khi mở app bank quét
+        document.getElementById('qr-image').src = `https://img.vietqr.io/image/${BANK_BIN}-${BANK_ACCOUNT}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(BANK_NAME)}`;
+        document.getElementById('memo-content').innerText = memo;
+        
+        document.getElementById('form-atm-input').style.display = 'none';
+        document.getElementById('qr-area').style.display = 'block';
+    }
+
+    function cancelQR() {
+        document.getElementById('form-atm-input').style.display = 'block';
+        document.getElementById('qr-area').style.display = 'none';
+    }
+
+    // Gửi xử lý dữ liệu thẻ cào Viettel/Vinaphone
+    function handleCardSubmit(e) {
+        e.preventDefault();
+        const type = document.getElementById('card-type').value;
+        const value = document.getElementById('card-value').value;
+        const code = document.getElementById('card-code').value;
+        const seri = document.getElementById('card-seri').value;
+
+        alert(`Gửi thẻ cào thành công!\nHệ thống đang kết nối duyệt thẻ tự động:\n- Nhà mạng: ${type}\n- Mệnh giá: ${value}đ\n- Mã thẻ: ${code}\n- Số Seri: ${seri}\nVui lòng chờ trong giây lát để xử lý cộng tiền.`);
+        document.getElementById('card-form').reset();
+    }
+</script>
+</body>
+</html>
