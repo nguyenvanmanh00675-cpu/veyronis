@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dịch Vụ Discord</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #050b08;
+      font-family: "Courier New", monospace;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #00ff77;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 119, 0.5);
+      animation: fadeInDown 0.8s ease-out;
+      text-align: center;
+    }
+
+    /* Khu vực danh sách dịch vụ */
+    .services-section {
+      max-width: 800px;
+      width: 100%;
+      background-color: #000;
+      border: 1px solid #17352a;
+      border-radius: 12px;
+      padding: 30px;
+      animation: slideDown 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      margin-bottom: 30px;
+    }
+
+    /* Từng ô dịch vụ */
+    .service-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background-color: #050b08;
+      border: 1px solid #17352a;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .service-card:hover {
+      border-color: #00ff77;
+      box-shadow: 0 0 10px rgba(0, 255, 119, 0.2);
+      transform: scale(1.01);
+    }
+
+    .service-card.selected {
+      border-color: #00ff77;
+      background-color: rgba(0, 255, 119, 0.05);
+    }
+
+    .service-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* Checkbox custom */
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #17352a;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .service-card.selected .custom-checkbox {
+      background-color: #00ff77;
+      border-color: #00ff77;
+    }
+
+    .custom-checkbox::after {
+      content: "✓";
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      display: none;
+    }
+
+    .service-card.selected .custom-checkbox::after {
+      display: block;
+    }
+
+    .service-name {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .service-price {
+      color: #00ff77;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* Bảng Tổng Tiền */
+    .total-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 2px dashed #17352a;
+    }
+
+    .total-title {
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .total-amount {
+      color: #00ff77;
+      font-size: 26px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 119, 0.4);
+    }
+
+    /* Nút quay lại */
+    .back-btn {
+      color: #6d887d;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+      margin-top: 20px;
+    }
+    .back-btn:hover {
+      color: #00ff77;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>DỊCH VỤ DISCORD</h1>
+
+  <div class="services-section">
+    <!-- Dịch vụ 1 -->
+    <div class="service-card" onclick="toggleService(this, 120000)">
+      <div class="service-info">
+        <div class="custom-checkbox"></div>
+        <div class="service-name">Set up Discord server</div>
+      </div>
+      <div class="service-price">120.000đ</div>
+    </div>
+
+    <!-- Dịch vụ 2 -->
+    <div class="service-card" onclick="toggleService(this, 60000)">
+      <div class="service-info">
+        <div class="custom-checkbox"></div>
+        <div class="service-name">Set Up bot cơ bản</div>
+      </div>
+      <div class="service-price">60.000đ</div>
+    </div>
+
+    <!-- BẢNG TỔNG TIỀN (Chỉ cộng dồn khi chọn từ 2 món trở lên) -->
+    <div class="total-box">
+      <div class="total-title">Tổng tiền thanh toán:</div>
+      <div class="total-amount" id="total-display">0đ</div>
+    </div>
+  </div>
+
+  <a href="index.html" class="back-btn">← Quay lại trang chính</a>
+
+  <!-- ĐOẠN JS XỬ LÝ LOGIC TÍNH TIỀN CỘNG DỒN -->
+  <script>
+    let selectedPrices = [];
+
+    function toggleService(element, price) {
+      element.classList.toggle('selected');
+      
+      if (element.classList.contains('selected')) {
+        selectedPrices.push(price); // Thêm giá vào mảng khi chọn
+      } else {
+        const index = selectedPrices.indexOf(price);
+        if (index > -1) {
+          selectedPrices.splice(index, 1); // Xóa giá khỏi mảng khi bỏ chọn
+        }
+      }
+
+      // Logic: Chọn từ 2 dịch vụ trở lên mới tính tổng tiền, chọn 1 món vẫn hiện 0đ
+      let totalMoney = 0;
+      if (selectedPrices.length >= 0) {
+        totalMoney = selectedPrices.reduce((sum, p) => sum + p, 0);
+      } else {
+        totalMoney = 0;
+      }
+      
+      // Hiển thị ra màn hình định dạng VNĐ
+      document.getElementById('total-display').innerText = totalMoney.toLocaleString('vi-VN') + 'đ';
+    }
+  </script>
+
+</body>
+</html>

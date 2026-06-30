@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Khoản Dịch Vụ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .nav-btn {
+            background: none;
+            border: 1px solid #00ff7f;
+            color: #00ff7f;
+            padding: 8px 16px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active, .nav-btn:hover {
+            background-color: #00ff7f;
+            color: #000;
+        }
+        .auth-container {
+            border: 2px solid #00ff7f;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.3);
+            width: 350px;
+            text-align: center;
+            background-color: #050505;
+        }
+        h2 {
+            color: #00ff7f;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #888;
+        }
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            padding-right: 35px;
+            background-color: #111;
+            border: 1px solid #222;
+            border-radius: 5px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .password-wrapper i {
+            position: absolute;
+            right: 12px;
+            color: #888;
+            cursor: pointer;
+        }
+        .password-wrapper i:hover {
+            color: #00ff7f;
+        }
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #888;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .forgot-password:hover {
+            color: #00ff7f;
+            text-decoration: underline;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ff7f;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .switch-form {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+        .switch-form a {
+            color: #00ff7f;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
+        .back-home {
+            display: block;
+            margin-top: 25px;
+            color: #6d887d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-home:hover {
+            color: #00ff7f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <button id="nav-login-btn" class="nav-btn active" onclick="showForm('login')">Đăng Nhập</button>
+    <button id="nav-register-btn" class="nav-btn" onclick="showForm('register')">Đăng Ký</button>
+</div>
+
+<div class="auth-container">
+
+    <div id="login-form">
+        <h2>ĐĂNG NHẬP</h2>
+        <form onsubmit="handleAuth(event, 'login')">
+            <div class="input-group">
+                <label>Tài khoản (Gmail hoặc Số điện thoại)</label>
+                <input type="text" id="login-user" required placeholder="Nhập Gmail hoặc SĐT của bạn...">
+            </div>
+            <div class="input-group">
+                <label>Mật khẩu</label>
+                <div class="password-wrapper">
+                    <input type="password" id="login-pass" required placeholder="Nhập mật khẩu...">
+                    <i class="fa-solid fa-eye-slash" onclick="togglePassword('login-pass', this)"></i>
+                </div>
+            </div>
+
+            <a class="forgot-password" onclick="handleForgotPassword()">Bạn quên mật khẩu?</a>
+
+            <button type="submit" class="btn">VÀO HỆ THỐNG</button>
+        </form>
+        <div class="switch-form">
+            Chưa có tài khoản? <a onclick="showForm('register')">Đăng ký ngay</a>
+        </div>
+    </div>
+
+    <div id="register-form" style="display: none;">
+        <h2>ĐĂNG KÝ</h2>
+        <form onsubmit="handleAuth(event, 'register')">
+            <div class="input-group">
+                <label>Tài khoản (Gmail hoặc Số điện thoại)</label>
+                <input type="text" id="reg-user" required placeholder="Nhập Gmail hoặc SĐT đăng ký...">
+            </div>
+            <div class="input-group">
+                <label>Mật khẩu</label>
+                <div class="password-wrapper">
+                    <input type="password" id="reg-pass" required placeholder="Tạo mật khẩu bảo mật...">
+                    <i class="fa-solid fa-eye-slash" onclick="togglePassword('reg-pass', this)"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Xác nhận lại mật khẩu</label>
+                <div class="password-wrapper">
+                    <input type="password" id="reg-confirm-pass" required placeholder="Nhập lại mật khẩu phía trên...">
+                    <i class="fa-solid fa-eye-slash" onclick="togglePassword('reg-confirm-pass', this)"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn">TẠO TÀI KHOẢN</button>
+        </form>
+        <div class="switch-form">
+            Đã có tài khoản? <a onclick="showForm('login')">Đăng nhập</a>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-home">← Quay lại trang chủ</a>
+</div>
+
+<script>
+// 1. Hàm chuyển đổi hiển thị qua lại giữa Form Đăng Nhập và Đăng Ký
+function showForm(type) {
+    var loginForm = document.getElementById('login-form');
+    var registerForm = document.getElementById('register-form');
+    var navLogin = document.getElementById('nav-login-btn');
+    var navRegister = document.getElementById('nav-register-btn');
+
+    if (type === 'register') {
+        registerForm.style.display = 'block';
+        loginForm.style.display = 'none';
+        navRegister.classList.add('active');
+        navLogin.classList.remove('active');
+    } else if (type === 'login') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        navLogin.classList.add('active');
+        navRegister.classList.remove('active');
+    }
+}
+
+// 2. Hàm bật/tắt ẩn hiện mật khẩu (Xử lý hình con mắt)
+function togglePassword(inputId, iconElement) {
+    var passwordInput = document.getElementById(inputId);
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        iconElement.classList.remove("fa-eye-slash");
+        iconElement.classList.add("fa-eye");
+    } else {
+        passwordInput.type = "password";
+        iconElement.classList.remove("fa-eye");
+        iconElement.classList.add("fa-eye-slash");
+    }
+}
+
+// 3. Hàm xử lý sự kiện khi ấn vào "Bạn quên mật khẩu?"
+function handleForgotPassword() {
+    alert("Hệ thống khôi phục mật khẩu tự động đang được cập nhật. Vui lòng liên hệ bộ phận hỗ trợ kỹ thuật!");
+}
+
+// 4. Hàm xử lý logic kiểm tra định dạng tài khoản đăng nhập / đăng ký
+function handleAuth(event, type) {
+    event.preventDefault();
+
+    const userInput = type === 'login'
+        ? document.getElementById('login-user').value.trim()
+        : document.getElementById('reg-user').value.trim();
+
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userInput);
+    const isPhone = /^0\d{9}$/.test(userInput);
+
+    let accountType = "";
+    if (isEmail) accountType = "Gmail";
+    if (isPhone) accountType = "Số điện thoại";
+
+    if (!accountType) {
+        alert("Vui lòng nhập đúng định dạng Gmail hoặc Số điện thoại (10 chữ số bắt đầu bằng số 0)!");
+        return;
+    }
+
+    if (type === 'register') {
+        const pass = document.getElementById('reg-pass').value;
+        const confirmPass = document.getElementById('reg-confirm-pass').value;
+
+        if (pass !== confirmPass) {
+            alert("Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.");
+            return;
+        }
+        alert(`Đăng ký thành công bằng ${accountType}!\nHệ thống đang xử lý dữ liệu...`);
+    } else {
+        alert(`Đăng nhập thành công bằng ${accountType}!`);
+    }
+}
+</script>
+
+</body>
+</html>
