@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veyronis - Tài khoản</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#050505;
+    color:white;
+}
+.container{
+    max-width:700px;
+    margin:40px auto;
+    padding:25px;
+}
+.card{
+    background:#111;
+    border:1px solid #00ff88;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 0 25px #00ff8840;
+}
+h1{
+    color:#00ff88;
+}
+input,button{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:10px;
+    border:0;
+}
+input{
+    background:#222;
+    color:white;
+}
+button{
+    background:#00ff88;
+    cursor:pointer;
+    font-weight:bold;
+}
+.history{
+    margin-top:20px;
+}
+.item{
+    padding:12px;
+    background:#1a1a1a;
+    margin:8px 0;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<div class="card">
+
+<h1>Veyronis Account</h1>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Mật khẩu">
+
+<button onclick="register()">Đăng ký</button>
+<button onclick="login()">Đăng nhập</button>
+
+<hr>
+
+<h2>Thông tin</h2>
+<p id="user">Chưa đăng nhập</p>
+
+<h2>Lịch sử giao dịch</h2>
+<div id="history" class="history"></div>
+
+</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const supabaseUrl="DÁN_SUPABASE_URL_CỦA_MÀY";
+const supabaseKey="DÁN_SUPABASE_KEY_CỦA_MÀY";
+
+const db=supabase.createClient(
+supabaseUrl,
+supabaseKey
+);
+
+
+async function register(){
+
+let email=emailInput().value;
+let pass=passwordInput().value;
+
+let {error}=await db.auth.signUp({
+email:email,
+password:pass
+});
+
+alert(error?error.message:"Đăng ký thành công");
+
+}
+
+
+async function login(){
+
+let {error}=await db.auth.signInWithPassword({
+
+email:emailInput().value,
+password:passwordInput().value
+
+});
+
+if(error)
+alert(error.message);
+
+else{
+alert("Đăng nhập OK");
+loadUser();
+}
+
+}
+
+
+function emailInput(){
+return document.getElementById("email");
+}
+
+function passwordInput(){
+return document.getElementById("password");
+}
+
+
+async function loadUser(){
+
+let {data}=await db.auth.getUser();
+
+if(!data.user)return;
+
+document.getElementById("user").innerHTML=
+data.user.email;
+
+loadHistory(data.user.id);
+
+}
+
+
+async function loadHistory(id){
+
+let {data}=await db
+.from("history")
+.select("*")
+.eq("user_id",id)
+.order("created_at",{ascending:false});
+
+
+document.getElementById("history").innerHTML =
+(data||[]).map(x=>`
+
+<div class="item">
+${x.name}<br>
+${x.amount}đ
+</div>
+
+`).join("");
+
+}
+
+
+loadUser();
+
+</script>
+
+</body>
+</html>
